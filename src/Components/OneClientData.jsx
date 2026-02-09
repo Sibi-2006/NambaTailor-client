@@ -9,7 +9,7 @@ export default function OneClientData() {
   const navigate = useNavigate()
  
 
-  const [client, setClient] = useState(null)
+  const [client, setClient] = useState({})
 
   useEffect(() => {
     const fetchOneClient = async () => {
@@ -54,6 +54,7 @@ export default function OneClientData() {
           <div className=' flex flex-row gap-5'>
             <button
               className='edit-btn'
+              onClick={()=>navigate(`/edit/client/${id}`)}
             >Update</button>
 
             <button

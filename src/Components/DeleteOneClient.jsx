@@ -5,7 +5,7 @@ import { toast } from "react-toastify"
 import { GlobalContext } from "../Context/GlobalContext"
 export default function DeleteOneClient() {
     const { id , cId } = useParams();
-    const [c_id , setC_id] = useState("");
+    const [c_id , setC_id] = useState("CUST");
     const navigate = useNavigate();
     const { baseUrl } = useContext(GlobalContext)
     const handleChange = (e)=>{
@@ -53,6 +53,7 @@ export default function DeleteOneClient() {
             </p>
             <input type="text" placeholder='enter customer Id'
                 className='delete-input'
+                value={c_id}
                 onChange={handleChange}
             />
             <button 

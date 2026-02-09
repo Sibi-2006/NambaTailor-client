@@ -14,6 +14,7 @@ import PantsMeasurement from "./Components/PantsMeasurement";
 import ChuridarMeasurements from "./Components/ChuridarMeasurements";
 import KurthiMeasurements from "./Components/KurthiMeasurements";
 import DeleteOneClient from "./Components/DeleteOneClient";
+import EditClient from "./Components/EditClient";
 
 function App() {
   return (
@@ -31,6 +32,8 @@ function App() {
 
             {/* delete client */}
             <Route path="/delete/client/:id/:cId" element={<DeleteOneClient/>}/>
+            {/* edit the client */}
+            <Route path="/edit/client/:id" element={<EditClient/>}/>
 
             {/* for male dress */}
             <Route path="/add-shirt-measurement/:id/:usedFor" element={<ShirtMeasurement/>}/>

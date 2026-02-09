@@ -1,73 +1,102 @@
-import React, { useContext, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import React, { useContext, useState ,useEffect} from 'react';
 import { GlobalContext } from '../Context/GlobalContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
 
-export default function AddClient() {
-  const [user, setUser] = useState({
-    name: "",
-    phone: "",
-    gender: "",
-    address: ""
-  });
-  const {baseUrl}=useContext(GlobalContext);
-  const navigate = useNavigate()
-  // handle change
-  const handleChange = (e) => {
+export default function EditClient() {
+    const {id} = useParams();
+    const [user, setUser] = useState({
+        name: "",
+        phone: "",
+        gender: "",
+        address: ""
+      });
+    const {baseUrl}=useContext(GlobalContext);
+    const navigate = useNavigate();
+    const [client, setClient] = useState({})
+    
+    const handleChange = (e) => {
     const { name, value } = e.target;
-    setUser(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  // 🔍 Validation
-  if (!user.name.trim()) {
-    toast.error("Name is required");
-    return;
-  }
-
-  if (!user.phone.trim()) {
-    toast.error("Phone number is required");
-    return;
-  }
-
-  if (!/^\d{10}$/.test(user.phone)) {
-    toast.error("Phone number must be 10 digits");
-    return;
-  }
-
-  if (!user.gender) {
-    toast.error("Please select gender");
-    return;
-  }
-
-  if (!user.address.trim()) {
-    toast.error("Address is required");
-    return;
-  }
-
-  try {
-    const res = await axios.post(
-      `${baseUrl}/admin/add-new-client`,
-      user,
-      { withCredentials: true }
-    );
-
-    if (res.data.data) {
-      toast.success("Client added successfully ✅");
-
-      setTimeout(() => {
-        navigate(`/one-client/data/${res.data.data._id}`);
-      }, 1200);
+        setUser(prev => ({ ...prev, [name]: value }));
+        };
+    useEffect(() => {
+    const fetchOneClient = async () => {
+      try {
+        const res = await axios.get(
+          `${baseUrl}/admin/get-one-client/${id}`,
+          { withCredentials: true }
+        )
+        setClient(res.data.client)
+      } catch (err) {
+        if (err.response?.status === 401) {
+          navigate("/")
+        }
+        console.log(err)
+      }
     }
-  } catch (err) {
-    toast.error("Something went wrong ❌");
-    console.log(err);
-  }
-};
+    fetchOneClient()
+  }, [baseUrl, navigate, id]);
 
+  useEffect(() => {
+  if (client && client.name) {
+    setUser({
+      name: client.name || "",
+      phone: client.phone || "",
+      gender: client.gender || "",
+      address: client.address || ""
+    });
+  }
+}, [client]);
+
+const handleSubmit = async (e)=>{
+    e.preventDefault();
+    
+      // 🔍 Validation
+      if (!user.name.trim()) {
+        toast.error("Name is required");
+        return;
+      }
+    
+      if (!user.phone.trim()) {
+        toast.error("Phone number is required");
+        return;
+      }
+    
+      if (!/^\d{10}$/.test(user.phone)) {
+        toast.error("Phone number must be 10 digits");
+        return;
+      }
+    
+      if (!user.gender) {
+        toast.error("Please select gender");
+        return;
+      }
+    
+      if (!user.address.trim()) {
+        toast.error("Address is required");
+        return;
+      }
+
+      try{
+         const res = await axios.patch(
+              `${baseUrl}/admin/update/${id}`,
+              user,
+              { withCredentials: true }
+            );
+
+            if (res.data.updatedClient) {
+                  toast.success("Client update successfully ✅");
+            
+                  setTimeout(() => {
+                    navigate(-1);
+                  }, 1200);
+            }
+      }catch(err){
+        toast.error("Something went wrong ❌");
+      }
+}
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8F6F2]">
@@ -75,6 +104,7 @@ export default function AddClient() {
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8"
       >
+        <h1 className=' text-secondary text-center'>Update details for <span className='text-primary font-medium'>{client.name}</span> </h1>
         {/* Name */}
         <div>
           <label className="block text-sm font-medium text-[#1F1F1F]">Name</label>
@@ -143,12 +173,11 @@ export default function AddClient() {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-[#4B2E83] text-white py-2 rounded-lg font-semibold transition hover:bg-[#E6C85C] hover:text-[#1F1F1F]"
+          className="w-full bg-green-500 text-white py-2 rounded-lg font-semibold transition hover:bg-green-400 "
         >
-          Add Client
+          Update Client
         </button>
       </form>
     </div>
-  );
+  )
 }
-

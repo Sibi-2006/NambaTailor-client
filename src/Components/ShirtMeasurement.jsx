@@ -161,13 +161,53 @@ export default function ShirtMeasurement() {
 
   if (!client) return null
 
-  const handleUpdate = ()=>{
-    if (!validateForm()) return
-    console.log(shirt)
+const handleUpdate = async () => {
+  if (!validateForm()) return;
+
+  try {
+     await axios.patch(
+      `${baseUrl}/admin/update-shirt/${id}`,
+      {
+        Shirt: {
+          type: "Shirt",
+          measurements: {
+            neck: Number(shirt.neck),
+            chest: Number(shirt.chest),
+            waist: Number(shirt.waist),
+            shoulder: Number(shirt.shoulder),
+            sleeve: Number(shirt.sleeve),
+            length: Number(shirt.length),
+            cuff: Number(shirt.cuff),
+          },
+          note: shirt.note, 
+        },
+      },
+      { withCredentials: true }
+    );
+
+    
+    toast.success("Shirt updated successfully");
+
+    setTimeout(() => {
+      navigate(-1);
+    }, 1500);
+  } catch (err) {
+    if (err.response?.data?.message) {
+      toast.error(err.response.data.message);
+    } else {
+      toast.error("Something went wrong");
+    }
+
+    if (err.response?.status === 401) {
+      navigate("/");
+    }
   }
+};
+
+
 
   return (
-    <div className="pt-28 px-4 bg-[#F8F6F2] min-h-screen">
+    <div className="py-28 px-4 bg-[#F8F6F2] min-h-screen">
 
       <div className="max-w-xl mx-auto bg-white rounded-2xl p-6 shadow border border-[#E6C85C]/40">
 
